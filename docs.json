@@ -26,15 +26,18 @@
             "group": "Getting started",
             "pages": [
               "index",
-              "quickstart",
-              "development"
+              "quickstart"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Self Hosting",
+            "icon": "server",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "selfhost/server",
+              "selfhost/mac",
+              "selfhost/windows",
+              "selfhost/android",
+              "selfhost/linux"
             ]
           },
           {
