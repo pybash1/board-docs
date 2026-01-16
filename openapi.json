@@ -1,0 +1,436 @@
+{
+"openapi": "3.1.0",
+"info": {
+"title": "Bin (Board Modified)",
+"description": "A minimalist pastebin API modified for Board. Device-based storage with authentication.",
+"contact": {
+"name": "Jordan Doyle",
+"email": "jordan@doyle.la"
+},
+"license": {
+"name": "WTFPL OR 0BSD",
+"identifier": "WTFPL OR 0BSD"
+},
+"version": "2.0.2"
+},
+"paths": {
+"/": {
+"get": {
+"tags": [
+"info"
+],
+"summary": "Get API information",
+"operationId": "index",
+"responses": {
+"200": {
+"description": "API information",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/ApiInfo"
+}
+}
+}
+}
+}
+},
+"put": {
+"tags": [
+"paste"
+],
+"summary": "Create a new paste from raw data",
+"operationId": "submit_raw",
+"parameters": [
+{
+"name": "Device-Code",
+"in": "header",
+"description": "8-character alphanumeric device identifier",
+"required": true,
+"schema": {
+"type": "string"
+}
+}
+],
+"requestBody": {
+"description": "Raw paste content",
+"content": {
+"text/plain": {
+"schema": {
+"type": "string"
+}
+}
+},
+"required": true
+},
+"responses": {
+"200": {
+"description": "URL of the created paste",
+"content": {
+"text/plain": {
+"schema": {
+"type": "string"
+}
+}
+}
+},
+"400": {
+"description": "Bad request - missing Device-Code header",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/ErrorResponse"
+}
+}
+}
+},
+"401": {
+"description": "Unauthorized - invalid or missing App-Password",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/ErrorResponse"
+}
+}
+}
+}
+},
+"security": [
+{
+"app_password": []
+}
+]
+},
+"post": {
+"tags": [
+"paste"
+],
+"summary": "Create a new paste from form data",
+"operationId": "submit",
+"parameters": [
+{
+"name": "Device-Code",
+"in": "header",
+"description": "8-character alphanumeric device identifier",
+"required": true,
+"schema": {
+"type": "string"
+}
+}
+],
+"requestBody": {
+"content": {
+"application/x-www-form-urlencoded": {
+"schema": {
+"$ref": "#/components/schemas/PasteForm"
+}
+}
+},
+"required": true
+},
+"responses": {
+"302": {
+"description": "Redirect to the created paste URL"
+},
+"400": {
+"description": "Bad request - missing Device-Code header",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/ErrorResponse"
+}
+}
+}
+},
+"401": {
+"description": "Unauthorized - invalid or missing App-Password",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/ErrorResponse"
+}
+}
+}
+}
+},
+"security": [
+{
+"app_password": []
+}
+]
+}
+},
+"/all": {
+"get": {
+"tags": [
+"paste"
+],
+"summary": "List all paste IDs for the authenticated device",
+"operationId": "list_all_pastes",
+"parameters": [
+{
+"name": "Device-Code",
+"in": "header",
+"description": "8-character alphanumeric device identifier",
+"required": true,
+"schema": {
+"type": "string"
+}
+}
+],
+"responses": {
+"200": {
+"description": "List of paste IDs owned by the device",
+"content": {
+"application/json": {
+"schema": {
+"type": "array",
+"items": {
+"type": "string"
+}
+}
+}
+}
+},
+"400": {
+"description": "Bad request - missing Device-Code header",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/ErrorResponse"
+}
+}
+}
+},
+"401": {
+"description": "Unauthorized - invalid or missing App-Password",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/ErrorResponse"
+}
+}
+}
+}
+},
+"security": [
+{
+"app_password": []
+}
+]
+}
+},
+"/device": {
+"post": {
+"tags": [
+"device"
+],
+"summary": "Generate a unique device code",
+"operationId": "generate_device_code",
+"responses": {
+"200": {
+"description": "Generated device code (8 alphanumeric uppercase characters)",
+"content": {
+"text/plain": {
+"schema": {
+"type": "string"
+}
+}
+}
+},
+"401": {
+"description": "Unauthorized - invalid or missing App-Password",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/ErrorResponse"
+}
+}
+}
+}
+},
+"security": [
+{
+"app_password": []
+}
+]
+}
+},
+"/openapi.json": {
+"get": {
+"tags": [
+"info"
+],
+"summary": "Get `OpenAPI` specification",
+"operationId": "openapi_spec",
+"responses": {
+"200": {
+"description": "OpenAPI specification",
+"content": {
+"application/json": {}
+}
+}
+}
+}
+},
+"/{paste}": {
+"get": {
+"tags": [
+"paste"
+],
+"summary": "Get paste content by ID",
+"operationId": "show_paste",
+"parameters": [
+{
+"name": "paste",
+"in": "path",
+"description": "Paste ID (optionally with file extension for syntax highlighting)",
+"required": true,
+"schema": {
+"type": "string"
+}
+},
+{
+"name": "Device-Code",
+"in": "header",
+"description": "8-character alphanumeric device identifier",
+"required": true,
+"schema": {
+"type": "string"
+}
+}
+],
+"responses": {
+"200": {
+"description": "Paste content",
+"content": {
+"text/plain": {}
+}
+},
+"400": {
+"description": "Bad request - missing Device-Code header",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/ErrorResponse"
+}
+}
+}
+},
+"401": {
+"description": "Unauthorized - paste not owned by this device or invalid App-Password",
+"content": {
+"application/json": {
+"schema": {
+"$ref": "#/components/schemas/ErrorResponse"
+}
+}
+}
+}
+},
+"security": [
+{
+"app_password": []
+}
+]
+}
+}
+},
+"components": {
+"schemas": {
+"ApiEndpoint": {
+"type": "object",
+"required": [
+"method",
+"path",
+"description"
+],
+"properties": {
+"description": {
+"type": "string",
+"description": "Endpoint description"
+},
+"method": {
+"type": "string",
+"description": "HTTP method"
+},
+"path": {
+"type": "string",
+"description": "URL path"
+}
+}
+},
+"ApiInfo": {
+"type": "object",
+"required": [
+"message",
+"endpoints"
+],
+"properties": {
+"endpoints": {
+"type": "array",
+"items": {
+"$ref": "#/components/schemas/ApiEndpoint"
+},
+"description": "List of available API endpoints"
+},
+"message": {
+"type": "string",
+"description": "Welcome message"
+}
+}
+},
+"ErrorResponse": {
+"type": "object",
+"required": [
+"error",
+"status"
+],
+"properties": {
+"error": {
+"type": "string",
+"description": "Error message"
+},
+"status": {
+"type": "integer",
+"format": "int32",
+"description": "HTTP status code",
+"minimum": 0
+}
+}
+},
+"PasteForm": {
+"type": "object",
+"required": [
+"val"
+],
+"properties": {
+"val": {
+"type": "string",
+"description": "Paste content"
+}
+}
+}
+},
+"securitySchemes": {
+"app_password": {
+"type": "apiKey",
+"in": "header",
+"name": "App-Password"
+}
+}
+},
+"tags": [
+{
+"name": "info",
+"description": "API information endpoints"
+},
+{
+"name": "device",
+"description": "Device management endpoints"
+},
+{
+"name": "paste",
+"description": "Paste management endpoints"
+}
+]
+}
