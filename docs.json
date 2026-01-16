@@ -3,9 +3,9 @@
   "theme": "mint",
   "name": "Board Documentation",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#ff9d00",
+    "light": "#4daceb",
+    "dark": "#207398"
   },
   "favicon": "/favicon.svg",
   "navigation": {
